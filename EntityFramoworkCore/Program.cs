@@ -31,19 +31,32 @@ namespace EntityFramoworkCore
                     $"Date : {f.DepartureTime.ToShortDateString()}");
             }
 
-            var client = contex.Clients.Find(1);
+            //var client = contex.Clients.Find(1);
 
-            if (client != null)
-            {
-                contex.Clients.Remove(client);
-                contex.SaveChanges();
-            }
+            //if (client != null)
+            //{
+            //    contex.Clients.Remove(client);
+            //    contex.SaveChanges();
+            //}
 
+
+            //foreach (var f in contex.Flights)
+            //{
+            //    Console.WriteLine($"Fligt : {f.Id} From {f.DepartureCity} {f.DepartureTime} Rating {f.Rating}");
+            //}
+
+
+
+            var client = contex.Clients.Find(2);
+            contex.Entry(client).Collection(c=>c.Flights).Load();
+            Console.WriteLine($"Client : {client.Name} ." +
+                              $"Count flights : {client.Flights.Count}");
 
             foreach (var f in contex.Flights)
             {
-                Console.WriteLine($"Fligt : {f.Id} From {f.DepartureCity} {f.DepartureTime} Rating {f.Rating}");
+                Console.WriteLine($"{f.DepartureCity} =====> {f.ArrivalCity}");
             }
+
 
 
         }
