@@ -11,7 +11,6 @@ namespace EntityFramoworkCore.Entities
     {
         public int Id { get; set; }
         public string Model { get; set; }
-        [Required, MaxLength(100)]
         public int MaxPassanger { get; set; }
         public ICollection<Flight> Flights { get; set; }
 

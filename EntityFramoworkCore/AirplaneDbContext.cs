@@ -1,4 +1,5 @@
 ﻿using EntityFramoworkCore.Entities;
+using EntityFramoworkCore.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -33,59 +34,49 @@ namespace EntityFramoworkCore
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Airplane>().HasData(new Airplane[]
-            {
-                 new Airplane()
-                {
-                    Id = 1,
-                    Model = "boing747",
-                    MaxPassanger = 300,
-                },
-                new Airplane()
-                {
-                    Id = 2,
-                    Model = "An914",
-                    MaxPassanger = 200,
-                },
-                 new Airplane()
-                {
-                    Id = 3,
-                    Model = "Mria",
-                    MaxPassanger = 150,
-                }
-            });
-            modelBuilder.Entity<Flight>().HasData(new Flight[]
-            {
-                new Flight()
-                {
-                    Id = 1,
-                    DepartureCity = "Kyiv",
-                    ArrivalCity = "Lviv",
-                    DepartureTime = new DateTime(2024,2,17),
-                    ArrivalTime = new DateTime(2024,2,17),
-                    AirplaneId = 1
-                },
-                 new Flight()
-                {
-                    Id = 2,
-                    DepartureCity = "Warshawa",
-                    ArrivalCity = "Lviv",
-                    DepartureTime = new DateTime(2024,2,18),
-                    ArrivalTime = new DateTime(2024,2,18),
-                    AirplaneId = 2
-                },
-                new Flight()
-                {
-                    Id = 3,
-                    DepartureCity = "Kyiv",
-                    ArrivalCity = "Lviv",
-                    DepartureTime = new DateTime(2024,2,22),
-                    ArrivalTime = new DateTime(2024,2,22),
-                    AirplaneId = 3
-                },
+            //Fluent API Configuration+
+            modelBuilder.Entity<Airplane>()
+                .Property(a => a.Model)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<Client>().ToTable("Passangers");
+            modelBuilder.Entity<Client>().Property(c=>c.Name)
+                .IsRequired()
+                .HasMaxLength(100)
+                .HasColumnName("FirstName");
+
+            modelBuilder.Entity<Client>().Property(c => c.Email)
+               .IsRequired()
+               .HasMaxLength(100);
+
+            modelBuilder.Entity<Flight>().HasKey(f => f.Id);
+
+            modelBuilder.Entity<Flight>().Property(c=> c.DepartureCity)
+                .IsRequired() 
+                .HasMaxLength(100);
+            modelBuilder.Entity<Flight>().Property(c => c.ArrivalCity)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            //one to many
+            modelBuilder.Entity<Flight>()
+                .HasOne(f => f.Airplane)
+                .WithMany(a => a.Flights)
+                .HasForeignKey(a => a.AirplaneId);
 
 
-            });
+            //many to many
+            modelBuilder.Entity<Flight>()
+                .HasMany(f => f.Clients)
+                .WithMany(c => c.Flights);
+
+            modelBuilder.SeedAirplanes();
+            modelBuilder.SeedFlights();
+
+
+           
+            
         }
 
 

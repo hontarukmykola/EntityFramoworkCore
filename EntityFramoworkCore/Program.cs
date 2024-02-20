@@ -39,9 +39,10 @@ namespace EntityFramoworkCore
                 contex.SaveChanges();
             }
 
+
             foreach (var f in contex.Flights)
             {
-                Console.WriteLine($"Fligt : {f.Id} From {f.DepartureCity} {f.DepartureTime} ");
+                Console.WriteLine($"Fligt : {f.Id} From {f.DepartureCity} {f.DepartureTime} Rating {f.Rating}");
             }
 
 

@@ -14,15 +14,13 @@ namespace EntityFramoworkCore.Entities
     {
 
         public int Id { get; set; }
-        [Required]
-        [MaxLength(100)]
-        [Column("FirstName")]
         public string Name { get; set; }
-        [Required, MaxLength(100)]
         public string Email { get; set; }
         public DateTime? Birthday { get; set; }
 
         public ICollection<Flight> Flights { get; set; }
+
+
 
     }
 }
