@@ -9,10 +9,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace EntityFramoworkCore.Migrations
+namespace data_access.Migrations
 {
     [DbContext(typeof(AirplaneDbContext))]
-    [Migration("20240219140336_Init")]
+    [Migration("20240221141843_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -49,12 +49,12 @@ namespace EntityFramoworkCore.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("MaxPassanger")
-                        .HasMaxLength(100)
                         .HasColumnType("int");
 
                     b.Property<string>("Model")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -84,10 +84,7 @@ namespace EntityFramoworkCore.Migrations
             modelBuilder.Entity("EntityFramoworkCore.Entities.Client", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("Birthday")
                         .HasColumnType("datetime2");
@@ -105,7 +102,30 @@ namespace EntityFramoworkCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Passangers");
+                    b.ToTable("Passangers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Birthday = new DateTime(2000, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "victor@gmail.com",
+                            Name = "Victor"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Birthday = new DateTime(2005, 5, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "ivanka@gmail.com",
+                            Name = "Ivanka"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Birthday = new DateTime(2001, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "oleg@gmail.com",
+                            Name = "Oleg"
+                        });
                 });
 
             modelBuilder.Entity("EntityFramoworkCore.Entities.Flight", b =>
@@ -129,10 +149,14 @@ namespace EntityFramoworkCore.Migrations
 
                     b.Property<string>("DepartureCity")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("DepartureTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("Rating")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -170,6 +194,50 @@ namespace EntityFramoworkCore.Migrations
                         });
                 });
 
+            modelBuilder.Entity("data_access.Entities.Credentials", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Credentials");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Login = "admin",
+                            Password = "admin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Login = "user",
+                            Password = "user"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Login = "designer",
+                            Password = "designer"
+                        });
+                });
+
             modelBuilder.Entity("ClientFlight", b =>
                 {
                     b.HasOne("EntityFramoworkCore.Entities.Client", null)
@@ -183,6 +251,17 @@ namespace EntityFramoworkCore.Migrations
                         .HasForeignKey("FlightsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("EntityFramoworkCore.Entities.Client", b =>
+                {
+                    b.HasOne("data_access.Entities.Credentials", "Credentials")
+                        .WithOne("Client")
+                        .HasForeignKey("EntityFramoworkCore.Entities.Client", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Credentials");
                 });
 
             modelBuilder.Entity("EntityFramoworkCore.Entities.Flight", b =>
@@ -199,6 +278,12 @@ namespace EntityFramoworkCore.Migrations
             modelBuilder.Entity("EntityFramoworkCore.Entities.Airplane", b =>
                 {
                     b.Navigation("Flights");
+                });
+
+            modelBuilder.Entity("data_access.Entities.Credentials", b =>
+                {
+                    b.Navigation("Client")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -12,12 +12,7 @@ namespace EntityFramoworkCore
 {
     public class AirplaneDbContext : DbContext
     {
-        public AirplaneDbContext()
-        {
-            //this.Database.EnsureDeleted();
-            // this.Database.EnsureCreated();
 
-        }
 
         public DbSet<Client> Clients { get; set; }
         public DbSet<Flight> Flights { get; set; }
@@ -71,8 +66,16 @@ namespace EntityFramoworkCore
                 .HasMany(f => f.Clients)
                 .WithMany(c => c.Flights);
 
+
+            //one to one
+            modelBuilder.Entity<Client>()
+                .HasOne(c => c.Credentials)
+                .WithOne(c => c.Client).HasForeignKey<Client>(c=>c.Id);
+
             modelBuilder.SeedAirplanes();
             modelBuilder.SeedFlights();
+            modelBuilder.SeedCredentials();
+            modelBuilder.SeedClients();
 
 
            
